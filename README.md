@@ -1,10 +1,10 @@
-# 🎬 Podcast-to-Shorts (PodcastClipper Pro)
+# 🎬 Shorts & Reels Builder (PodcastClipper Pro)
 
-![Podcast-to-Shorts Banner](https://img.shields.io/badge/Podcast--to--Shorts-AI--Powered-blueviolet?style=for-the-badge&logo=python)
+![Shorts-Reels-Builder Banner](https://img.shields.io/badge/Shorts--Reels--Builder-AI--Powered-blueviolet?style=for-the-badge&logo=python)
 ![Python Version](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![CustomTkinter](https://img.shields.io/badge/UI-CustomTkinter-10B981?style=for-the-badge)
 
-An elite Windows application designed to transform long-form podcasts into viral short-form content. Using AI-powered transcription, creative framing, and professional audio mastering, you can generate months of clips in minutes.
+An elite Windows application designed to transform long-form podcasts and videos into viral short-form content (YouTube Shorts, Instagram Reels, TikToks). Using AI-powered OpenAI Whisper transcription, creative framing algorithms, and professional audio mastering, you can generate months of high-quality clips in minutes. Fully automated environment setup allows you to get started with a single click.
 
 ---
 
@@ -53,21 +53,28 @@ An elite Windows application designed to transform long-form podcasts into viral
 
 ### 👤 For Users (Easy Start)
 
-1. **Prerequisites:** Ensure you have [Python 3.10+](https://www.python.org/downloads/) installed and on your PATH.
-2. **Setup:** Run `start_app.bat`. This will automatically create a virtual environment, install all dependencies, and launch the app.
-3. **Optional:** Run `python create_shortcut.py` to create a "Podcast-to-Shorts" shortcut on your Desktop with the official icon.
+1. **Prerequisites:** 
+   - [Python 3.10+](https://www.python.org/downloads/) (Ensure "Add Python to PATH" is checked)
+   - [FFmpeg](https://ffmpeg.org/download.html) (Download, extract, and add to your system **PATH**)
+2. **Setup & Launch:** Simply double-click `start_app.bat`. 
+   - *First run:* It will automatically create a virtual environment and install all required dependencies (this may take 2-3 minutes).
+   - *Subsequent runs:* It will launch the application instantly.
+3. **Desktop Shortcut:** To create a desktop icon for easy access, run:
+   ```bash
+   venv\Scripts\python create_shortcut.py
+   ```
 
 ### 👩‍💻 For Developers (Manual Setup)
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/GyaneshSamanta/Podcast-to-Shorts.git
-   cd Podcast-to-Shorts
+   git clone https://github.com/GyaneshSamanta/Shorts-Reels-builder.git
+   cd Shorts-Reels-builder
    ```
 2. **Create a Virtual Environment:**
    ```bash
    python -m venv venv
-   source venv/Scripts/activate  # Windows
+   venv\Scripts\activate  # Windows
    ```
 3. **Install Dependencies:**
    ```bash
@@ -94,16 +101,18 @@ An elite Windows application designed to transform long-form podcasts into viral
 ## 📂 Project Structure
 
 ```text
-Podcast-to-Shorts/
+Shorts-Reels-builder/
 ├── assets/             # Icons and visual assets
 ├── backend/            # Processing engines
 │   ├── audio_util.py   # Audio mastering logic
 │   ├── subtitle_util.py# ASS subtitle generation
 │   ├── transcribe_util.py# Whisper integration
 │   └── video_util.py   # MoviePy/FFmpeg pipeline
+├── build_scripts/      # Environment & compilation scripts
 ├── main.py             # Main entry point & UI
 ├── requirements.txt    # Project dependencies
-├── start_app.bat       # User-friendly launcher
+├── start_app.bat       # User-friendly launcher (Auto-setup)
+├── create_shortcut.py  # Utility to create desktop shortcut
 └── Launch PodcastClipper.vbs # Silent VBS launcher
 ```
 

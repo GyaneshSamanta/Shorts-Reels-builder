@@ -9,3 +9,5 @@ GPUtil
 pyinstaller
 imageio-ffmpeg
 opencv-python
+winshell
+pywin32
