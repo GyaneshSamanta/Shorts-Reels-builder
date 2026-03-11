@@ -11,6 +11,9 @@ build/
 dist/
 *.spec
 
+# Runtime generated
+_ffmpeg_bin/
+
 # Misc
 *.log
 test_output.mp4

@@ -1,17 +1,49 @@
 import os
+import sys
+import shutil
 import whisper
 import torch
 import gc
 
-# Whisper requires ffmpeg on PATH. If it's not installed system-wide,
-# inject the bundled version from imageio-ffmpeg.
-try:
-    import imageio_ffmpeg
-    _ffmpeg_dir = os.path.dirname(imageio_ffmpeg.get_ffmpeg_exe())
-    if _ffmpeg_dir not in os.environ.get("PATH", ""):
-        os.environ["PATH"] = _ffmpeg_dir + os.pathsep + os.environ.get("PATH", "")
-except Exception:
-    pass  # If imageio-ffmpeg isn't available, hope system ffmpeg is on PATH
+# ── Ensure ffmpeg is available for Whisper ────────────────────────────────
+# Whisper calls `ffmpeg` via subprocess.  If it's not installed system-wide,
+# we grab the binary bundled inside imageio-ffmpeg and make it available
+# as "ffmpeg.exe" on the PATH.
+def _ensure_ffmpeg():
+    """Create an ffmpeg.exe alias from imageio-ffmpeg if needed."""
+    # Quick check: is ffmpeg already available?
+    import subprocess
+    try:
+        subprocess.run(
+            ["ffmpeg", "-version"],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)
+        )
+        return  # ffmpeg is already on PATH
+    except FileNotFoundError:
+        pass
+
+    try:
+        import imageio_ffmpeg
+        src = imageio_ffmpeg.get_ffmpeg_exe()
+        if not os.path.isfile(src):
+            return
+
+        # Create a directory inside the project's temp area
+        dest_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "_ffmpeg_bin")
+        dest_dir = os.path.normpath(dest_dir)
+        os.makedirs(dest_dir, exist_ok=True)
+
+        dest = os.path.join(dest_dir, "ffmpeg.exe")
+        if not os.path.isfile(dest):
+            shutil.copy2(src, dest)
+
+        # Prepend to PATH so subprocess can find it
+        os.environ["PATH"] = dest_dir + os.pathsep + os.environ.get("PATH", "")
+    except Exception as exc:
+        print(f"[Warning] Could not set up ffmpeg: {exc}")
+
+_ensure_ffmpeg()
 
 class TranscriptionEngine:
     def __init__(self, model_size="medium"):
