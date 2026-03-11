@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual Environment
+venv/
+
+# PyInstaller artifacts
+build/
+dist/
+*.spec
+
+# Misc
+*.log
+test_output.mp4
+generate_icon.py

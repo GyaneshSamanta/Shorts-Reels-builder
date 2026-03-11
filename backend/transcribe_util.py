@@ -1,6 +1,17 @@
+import os
 import whisper
 import torch
 import gc
+
+# Whisper requires ffmpeg on PATH. If it's not installed system-wide,
+# inject the bundled version from imageio-ffmpeg.
+try:
+    import imageio_ffmpeg
+    _ffmpeg_dir = os.path.dirname(imageio_ffmpeg.get_ffmpeg_exe())
+    if _ffmpeg_dir not in os.environ.get("PATH", ""):
+        os.environ["PATH"] = _ffmpeg_dir + os.pathsep + os.environ.get("PATH", "")
+except Exception:
+    pass  # If imageio-ffmpeg isn't available, hope system ffmpeg is on PATH
 
 class TranscriptionEngine:
     def __init__(self, model_size="medium"):
@@ -31,11 +42,18 @@ class TranscriptionEngine:
         Transcribes the given file and returns a list of segment dictionaries.
         Each segment contains: start, end, text.
         """
+        import os
+        # Normalize path for Windows compatibility
+        file_path = os.path.normpath(file_path)
+        
+        if not os.path.isfile(file_path):
+            raise FileNotFoundError(f"Video file not found: {file_path}")
+        
         try:
             self._load_model()
             
             if callback:
-                callback("Starting transcription (this might take a while)...")
+                callback(f"Transcribing: {os.path.basename(file_path)} …")
             
             # Whisper internal FP16 logic handles the inference
             fp16 = True if self.device == "cuda" else False
