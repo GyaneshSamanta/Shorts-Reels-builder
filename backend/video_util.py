@@ -1,73 +1,89 @@
 import os
+from PIL import Image
+
+# ── Pillow 10+ compatibility ──────────────────────────────────────────────
+# MoviePy 1.0.3 calls PIL.Image.ANTIALIAS which was removed in Pillow 10.
+# Monkey-patch it back so .resize() and .on_color() don't crash.
+if not hasattr(Image, "ANTIALIAS"):
+    Image.ANTIALIAS = Image.LANCZOS
+
 from moviepy.editor import VideoFileClip
+
 
 class VideoEngine:
     def __init__(self):
-        # We enforce NVENC for hardware acceleration on Nvidia GPUs
-        self.codec = "h264_nvenc"
-        
-    def process_clip(self, input_path, output_path, start_time, end_time, mode="Crop (Center)", callback=None):
+        # Try NVENC first; fall back to libx264 if the GPU encoder is unavailable
+        self.codec = self._choose_codec()
+
+    @staticmethod
+    def _choose_codec():
+        """Pick the best available H.264 encoder."""
+        import subprocess
+        try:
+            r = subprocess.run(
+                ["ffmpeg", "-hide_banner", "-encoders"],
+                capture_output=True, text=True, timeout=5,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            )
+            if "h264_nvenc" in r.stdout:
+                return "h264_nvenc"
+        except Exception:
+            pass
+        return "libx264"
+
+    def process_clip(self, input_path, output_path, start_time, end_time,
+                     mode="Crop (Center)", callback=None):
         """
-        Processes a single clip from a source video:
         1. Extracts the subclip.
-        2. Calculates 9:16 target dimensions.
-        3. Applies Crop (Center) or Fit (Add Borders) depending on 'mode'.
-        4. Renders the final output using NVENC.
-        5. Closes the clip immediately to free memory.
+        2. Applies Crop (Center) or Fit (Add Borders).
+        3. Renders via NVENC (or libx264 fallback).
+        4. Closes the clip to free memory.
         """
         clip = None
         try:
             if callback:
-                callback(f"Loading video: {os.path.basename(input_path)}...")
-                
+                callback(f"Loading video: {os.path.basename(input_path)}…")
+
             clip = VideoFileClip(input_path).subclip(start_time, end_time)
-            
             w, h = clip.size
-            
-            # Target 9:16 ratio based on source height
+
+            # Target 9:16 width based on source height
             target_w = int(h * (9 / 16))
-            
+
             if mode == "Crop (Center)":
                 if w > target_w:
-                    crop_x1 = int((w - target_w) / 2)
-                    crop_x2 = crop_x1 + target_w
-                    clip = clip.crop(x1=crop_x1, y1=0, x2=crop_x2, y2=h)
+                    x1 = int((w - target_w) / 2)
+                    clip = clip.crop(x1=x1, y1=0, x2=x1 + target_w, y2=h)
+
             elif mode == "Fit (Add Borders)":
-                # To fit the video within a 9:16 vertical canvas without cutting edges:
-                # We create a target resolution of e.g. (1080, 1920) by scaling width to target then adding padding.
-                # However, a simpler MoviePy approach is resizing width to target_w, and let height scale,
-                # then placing it in a black canvas of (target_w, target_h = w * 16/9 if we based it on width).
-                
-                # To be exact and keep quality: Base the canvas on the original width being the max bounds
-                # or base on height. For standard Fit: Target canvas is (target_w, h) where target_w = h*(9/16)
-                # But if original is horizontal (w > h), target_w < w. So to fit we must shrink the whole video
-                # to width = target_w, which creates standard letterboxing.
-                
-                # Resize so width matches the narrow 9:16 width
+                # Shrink the whole frame so width == target_w, then centre
+                # on a black 9:16 canvas.
                 clip = clip.resize(width=target_w)
-                
-                # After resizing, place it in the center of a black 9:16 canvas
-                # The canvas height is target_w * (16/9)
                 canvas_h = int(target_w * (16 / 9))
-                clip = clip.on_color(size=(target_w, canvas_h), color=(0, 0, 0), pos='center')
-            
+                clip = clip.on_color(
+                    size=(target_w, canvas_h),
+                    color=(0, 0, 0),
+                    pos="center",
+                )
+
             if callback:
-                callback(f"Rendering: {os.path.basename(output_path)}...")
-                
-            # Render using hardware encoder
-            clip.write_videofile(
-                output_path,
+                callback(f"Rendering ({self.codec}): {os.path.basename(output_path)}…")
+
+            write_kw = dict(
                 codec=self.codec,
                 audio_codec="aac",
                 logger=None,
                 threads=4,
-                preset="fast" # NVENC preset
             )
-            
+            if self.codec == "h264_nvenc":
+                write_kw["preset"] = "fast"
+
+            clip.write_videofile(output_path, **write_kw)
+
         except Exception as e:
             print(f"Video Processing Error for {output_path}: {e}")
-            raise e
+            raise
         finally:
-            # CRITICAL: Close clip instances to prevent RAM/VRAM leak
             if clip is not None:
                 clip.close()
+
