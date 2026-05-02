@@ -1,143 +1,109 @@
-# 🎬 Shorts & Reels Builder (PodcastClipper Pro)
+# Shorts & Reels Builder (PodcastClipper Pro)
 
-![Shorts-Reels-Builder Banner](https://img.shields.io/badge/Shorts--Reels--Builder-AI--Powered-blueviolet?style=for-the-badge&logo=python)
-![Python Version](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![CustomTkinter](https://img.shields.io/badge/UI-CustomTkinter-10B981?style=for-the-badge)
+> **Drop in a 2-hour podcast. Get back a month of vertical Shorts, Reels, and TikToks — fully transcribed, captioned, mastered, and rendered.**
 
-An elite Windows application designed to transform long-form podcasts and videos into viral short-form content (YouTube Shorts, Instagram Reels, TikToks). Using AI-powered OpenAI Whisper transcription, creative framing algorithms, and professional audio mastering, you can generate months of high-quality clips in minutes. Fully automated environment setup allows you to get started with a single click.
+![Banner](https://img.shields.io/badge/PodcastClipper-Pro-blueviolet?style=for-the-badge&logo=python)
 
----
-
-## ✨ Key Features
-
-### 🎙️ AI-Powered Transcription
-- **Whisper Integration:** Uses OpenAI's Whisper model (Medium) for industry-leading speech-to-text accuracy.
-- **Segmented Logic:** Click on any transcribed segment to instantly add it to your render queue.
-
-### 🖼️ WYSIWYG Visual Editor
-- **Real-time Preview:** See exactly what your clip looks like before rendering with the dynamic crop overlay.
-- **Multi-Aspect Ratio Support:**
-  - `9:16 Crop` (Vertical Shorts/TikTok)
-  - `9:16 Fit` (Letterboxed)
-  - `1:1 Square` (Instagram/Facebook)
-  - `16:9 Original` (YouTube)
-
-### 💬 Burned-In Captions
-- **Open Captions:** Automatically overlay transcription segments as burned-in subtitles.
-- **Styled Delivery:** Professional bold white text with black outlines for maximum readability.
-
-### 🎧 Audio Mastering Suite
-- **Noise Suppression:** Integrated AI noise removal (via optional DeepFilterNet).
-- **Podcast Master EQ:** Automated high-pass filtering (80Hz), warmth boost at 150Hz, and presence boost at 3.5kHz.
-- **Loudness Normalization:** Ensures all clips are standardized to -16 LUFS.
-
-### 🚀 High-Performance UI
-- **Paned Layout:** Fully resizable 3-pane interface (Transcription | Controls | Queue).
-- **Resource Monitoring:** Real-time mini-graph for CPU, RAM, and VRAM usage.
-- **Toast Notifications:** Modern, non-blocking notifications for status updates.
+![Python](https://img.shields.io/badge/python-3.10%2B-3776AB) ![Whisper](https://img.shields.io/badge/AI-OpenAI%20Whisper-10B981) ![Platform](https://img.shields.io/badge/platform-Windows-0078D6)
 
 ---
 
-## 🛠️ Tech Stack
+## About
 
-- **GUI:** [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) & `PanedWindow`
-- **Transcription:** [OpenAI Whisper](https://github.com/openai/whisper)
-- **Video Processing:** [MoviePy](https://zulko.github.io/moviepy/) & [FFmpeg](https://ffmpeg.org/)
-- **Computer Vision:** [OpenCV](https://opencv.org/) (for preview extraction)
-- **Audio Processing:** Pure FFmpeg filters (Loudnorm, Highpass, Equalizer)
-- **Resource Monitoring:** `psutil` & `GPUtil`
+**Who:** Built and maintained by Gyanesh Samanta — a single-author tool, open for community contributions.
+**What:** A Windows desktop app that turns long-form podcast / interview video into ready-to-publish vertical clips, with AI transcription, multi-aspect framing, burned-in captions, and broadcast-grade audio mastering.
+**When:** v1 shipped March 2026; actively maintained.
+**Where:** Windows 10/11 desktop. Python 3.10+, ships its own `_ffmpeg_bin` for zero-config render.
+**Why:** Editing clips by hand is the slowest part of every creator's pipeline. PodcastClipper Pro compresses "load → transcribe → pick → master → render" into a few clicks.
 
----
+## The Story
 
-## 💻 Installation
+A typical 90-minute podcast yields **15–25 sharable moments**. Manually clipping them takes a creator 4–6 hours per episode in Premiere or DaVinci. PodcastClipper Pro collapses that loop:
 
-### 👤 For Users (Easy Start)
+1. **Load** any `.mp4 / .mkv / .mov`.
+2. **Transcribe** locally with **OpenAI Whisper Medium** — no cloud, no API bill.
+3. **Click any text segment** to drop it into the render queue with a live WYSIWYG crop overlay.
+4. **Master audio** automatically: high-pass at 80Hz, warmth at 150Hz, presence at 3.5kHz, loudness normalized to **-16 LUFS**, optional DeepFilterNet noise suppression.
+5. **Burn captions** (bold white + black outline, broadcast-style).
+6. **Batch render** — 9:16 crop / 9:16 fit / 1:1 / 16:9 outputs in one go.
 
-1. **Prerequisites:** 
-   - [Python 3.10+](https://www.python.org/downloads/) (Ensure "Add Python to PATH" is checked)
-   - [FFmpeg](https://ffmpeg.org/download.html) (Download, extract, and add to your system **PATH**)
-2. **Setup & Launch:** Simply double-click `start_app.bat`. 
-   - *First run:* It will automatically create a virtual environment and install all required dependencies (this may take 2-3 minutes).
-   - *Subsequent runs:* It will launch the application instantly.
-3. **Desktop Shortcut:** To create a desktop icon for easy access, run:
-   ```bash
-   venv\Scripts\python create_shortcut.py
-   ```
+The UI is a 3-pane resizable layout (transcription | controls | queue) with a live CPU/RAM/VRAM mini-graph so you know exactly what your machine is doing during a render.
 
-### 👩‍💻 For Developers (Manual Setup)
+A first-run `start_app.bat` builds the venv, installs deps, and launches — one double-click, no terminal.
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/GyaneshSamanta/Shorts-Reels-builder.git
-   cd Shorts-Reels-builder
-   ```
-2. **Create a Virtual Environment:**
-   ```bash
-   python -m venv venv
-   venv\Scripts\activate  # Windows
-   ```
-3. **Install Dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. **Run Application:**
-   ```bash
-   python main.py
-   ```
+## Gallery
+
+The app ships with an `assets/icon.ico` and a clean CustomTkinter UI. Screenshots and a demo reel are on the project's LinkedIn post.
+
+| Feature | What it does |
+|---|---|
+| Whisper Medium transcription | Industry-leading speech-to-text, fully local |
+| WYSIWYG crop overlay | See the vertical crop before you render |
+| 4 aspect ratios | 9:16 crop, 9:16 fit (letterbox), 1:1, 16:9 |
+| Burned-in captions | Auto-generated from Whisper segments |
+| Audio mastering | EQ + loudnorm to -16 LUFS |
+| Resource monitor | Live CPU / RAM / VRAM during render |
 
 ---
 
-## 📖 Usage Guide
+## Tech Stack
 
-1.  **STEP 1:** Click **Load Source Video** to select your podcast file (.mp4, .mkv, .mov).
-2.  **STEP 2:** Click **Set Output Folder** where your clips will be saved.
-3.  **STEP 3:** Click **Generate Transcript**. This may take a minute as the AI model loads.
-4.  **CLIP SELECTION:** Click on any text block in the left pane to add that segment to the queue. You will see a preview frame appear.
-5.  **STEP 4 (Optional):** Toggle **Enhance Audio** or **Burn-In Captions** if desired.
-6.  **STEP 5:** Click **Batch Render Queue** and relax while the app handles the heavy lifting!
+- **GUI:** [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) + `PanedWindow`
+- **Transcription:** [OpenAI Whisper](https://github.com/openai/whisper) (Medium)
+- **Video:** [MoviePy 1.0.3](https://zulko.github.io/moviepy/) + [FFmpeg](https://ffmpeg.org/) (bundled in `_ffmpeg_bin/`)
+- **Computer vision:** OpenCV (preview frame extraction)
+- **Audio:** Pure FFmpeg filters — `loudnorm`, `highpass`, `equalizer`
+- **Resource monitor:** `psutil`, `GPUtil`
+- **Packaging:** PyInstaller, `imageio-ffmpeg`, `winshell`, `pywin32`
 
----
+## Repo Structure
 
-## 📂 Project Structure
-
-```text
+```
 Shorts-Reels-builder/
-├── assets/             # Icons and visual assets
-├── backend/            # Processing engines
-│   ├── audio_util.py   # Audio mastering logic
-│   ├── subtitle_util.py# ASS subtitle generation
-│   ├── transcribe_util.py# Whisper integration
-│   └── video_util.py   # MoviePy/FFmpeg pipeline
-├── build_scripts/      # Environment & compilation scripts
-├── main.py             # Main entry point & UI
-├── requirements.txt    # Project dependencies
-├── start_app.bat       # User-friendly launcher (Auto-setup)
-├── create_shortcut.py  # Utility to create desktop shortcut
-└── Launch PodcastClipper.vbs # Silent VBS launcher
+├── assets/                       # icon.ico
+├── backend/
+│   ├── audio_util.py             # Loudnorm + EQ pipeline
+│   ├── subtitle_util.py          # ASS subtitle generation
+│   ├── transcribe_util.py        # Whisper wrapper
+│   └── video_util.py             # MoviePy / FFmpeg render pipeline
+├── build_scripts/                # PyInstaller / packaging
+├── _ffmpeg_bin/                  # Bundled FFmpeg binaries
+├── main.py                       # Entry point + UI
+├── requirements.txt
+├── start_app.bat                 # First-run venv + launch
+├── create_shortcut.py            # Optional desktop shortcut
+├── Launch PodcastClipper.vbs     # Silent launcher
+├── PRD.md / RevisedPRD.md        # Product spec docs
+└── SpecDocument.md / techspec2.md
 ```
 
----
+## Getting Started
 
-## 🤝 Contributing
+**Users (one-click):**
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+1. Install [Python 3.10+](https://python.org/downloads/) (check "Add to PATH").
+2. Double-click `start_app.bat`. First run takes 2–3 min to build the venv; subsequent runs launch instantly.
+3. Optional: `venv\Scripts\python create_shortcut.py` for a desktop icon.
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+**Developers:**
 
----
+```bash
+git clone https://github.com/GyaneshSamanta/Shorts-Reels-builder.git
+cd Shorts-Reels-builder
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python main.py
+```
 
-## ❤️ Support the Developer
+## Contributing
 
-If you find this project useful, consider supporting the journey!
+PRs welcome. Fork → branch → PR.
 
-<a href="https://buymeachai.ezee.li/GyaneshOnProduct">
-  <img src="https://buymeachai.ezee.li/assets/images/buymeachai-button.png" alt="Buy Me A Chai" height="28">
-</a>
+## License
 
----
+MIT — see [`LICENSE`](./LICENSE).
 
-*Built with ❤️ by [Gyanesh Samanta](https://www.linkedin.com/in/gyanesh-samanta/)*
+## Credits
+
+Built by **Gyanesh Samanta** ([LinkedIn](https://www.linkedin.com/in/gyanesh-samanta/)). Support the project: [Buy Me A Chai](https://buymeachai.ezee.li/GyaneshOnProduct).
